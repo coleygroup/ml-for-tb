@@ -1,0 +1,45 @@
+REMARK  6 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C08_6  and  N09_18 
+REMARK    2  A    between atoms: C11_7  and  C12_8 
+REMARK    3  A    between atoms: C11_7  and  S10_22 
+REMARK    4  A    between atoms: C12_8  and  C13_9 
+REMARK    5  A    between atoms: C13_9  and  C14_10 
+REMARK    6  A    between atoms: N09_18  and  S10_22 
+ROOT
+HETATM    1  C01 JFX A 501      34.232  -4.623  -7.799  1.00 62.30     0.070 C 
+HETATM    2  C02 JFX A 501      34.095  -6.141  -7.839  1.00 69.74     0.034 A 
+HETATM    3  C05 JFX A 501      34.575  -8.326  -7.897  1.00 66.41     0.060 A 
+HETATM    4  C06 JFX A 501      35.184  -7.085  -7.873  1.00 67.31     0.018 A 
+HETATM    5  C07 JFX A 501      36.596  -6.989  -7.882  1.00 64.74     0.046 A 
+HETATM    6  C08 JFX A 501      37.370  -8.152  -7.919  1.00 66.27     0.043 A 
+HETATM    7  C18 JFX A 501      36.751  -9.411  -7.945  1.00 58.48     0.032 A 
+HETATM    8  C19 JFX A 501      35.364  -9.503  -7.936  1.00 57.92     0.034 A 
+HETATM    9  N03 JFX A 501      32.958  -6.814  -7.846  1.00 73.37    -0.304 N 
+ATOM     10  H03 JFX A 501      32.023  -6.407  -7.828  1.00  0.00     0.186 HD
+HETATM   11  N04 JFX A 501      33.242  -8.122  -7.881  1.00 70.74    -0.300 N 
+ATOM     12  H04 JFX A 501      32.543  -8.865  -7.894  1.00  0.00     0.187 HD
+ENDROOT
+BRANCH   6  13
+HETATM   13  N09 JFX A 501      38.820  -8.086  -7.929  1.00 70.80    -0.285 N 
+ATOM     14  H09 JFX A 501      39.355  -8.946  -8.054  1.00  0.00     0.178 HD
+BRANCH  13  15
+HETATM   15  S10 JFX A 501      39.656  -6.609  -7.738  1.00 67.91     0.231 S 
+HETATM   16  O16 JFX A 501      41.084  -6.843  -7.539  1.00 64.11    -0.206 OA
+HETATM   17  O17 JFX A 501      39.281  -5.965  -6.478  1.00 69.85    -0.206 OA
+BRANCH  15  18
+HETATM   18  C11 JFX A 501      39.347  -5.521  -9.164  1.00 70.63     0.163 C 
+BRANCH  18  19
+HETATM   19  C12 JFX A 501      40.640  -4.871  -9.647  1.00 65.37     0.019 C 
+BRANCH  19  20
+HETATM   20  C13 JFX A 501      40.852  -5.117 -11.140  1.00 65.38     0.032 C 
+BRANCH  20  21
+HETATM   21  C14 JFX A 501      40.928  -3.811 -11.925  1.00 68.91     0.222 C 
+HETATM   22  F15 JFX A 501      41.100  -4.066 -13.253  1.00 69.95    -0.255 F 
+ENDBRANCH  20  21
+ENDBRANCH  19  20
+ENDBRANCH  18  19
+ENDBRANCH  15  18
+ENDBRANCH  13  15
+ENDBRANCH   6  13
+TORSDOF 6
