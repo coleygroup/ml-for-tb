@@ -2,7 +2,13 @@
 Project for sharing surrogate models for TB inhibitors, data sharing, and Jupyter notebooks for prototyping.
 
 ### Data
-`/.data/0_raw` can be used for small (a few MB) CSV files for easy access. Larger files can be shared with figshare, gdrive, etc. and downloaded on your local machine or cluster.
+the [`data`](./data/) directory can be used for small (a few MB) CSV files for easy access. Larger files can be shared with figshare, gdrive, etc. and downloaded on your local machine or cluster.
+
+#### [`0_raw`](./data/0_raw/)
+TODO: raw activity data
+
+#### [`1_docking`](./data/1_docking/)
+docking validation data: PDB structures used for redocking, config files, images of docked poses, docking output
 
 Links to data:
 * TBD
