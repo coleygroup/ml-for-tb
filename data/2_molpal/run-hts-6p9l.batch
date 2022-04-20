@@ -1,0 +1,62 @@
+#!/bin/bash
+#SBATCH -J molpal-hts-6p9l
+#SBATCH -o %x_%j.out
+#SBATCH -e %x_%j.err
+
+#SBATCH --mail-type=FAIL
+#SBATCH --signal=SIGTERM@120        # send a SIGTERM 120s before timing out
+
+#SBATCH -N 4                        # number of nodes
+#SBATCH --ntasks-per-node 2
+#SBATCH -c 8                        # cores per task
+
+#SBATCH --mem-per-cpu 2G                 # total memory / node
+#SBATCH -t 1-00:00
+#SBATCH -p xeon-p8                 # Partition to submit to
+
+source activate molpal
+
+export TMPDIR=/state/partition1/user/dgraff
+export TMP=$TMPDIR
+export TEMP=$TMPDIR
+export NUM_GPUS=$( echo $CUDA_VISIBLE_DEVICES | awk -F ',' '{print NF}' )
+
+CONFIG=~/ml-for-tb/data/2_molpal/hts_6p9l.ini
+
+######################## DO NOT CHANGE THINGS HERE ############################
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+redis_password=$( cat /proc/sys/kernel/random/uuid )
+export redis_password
+
+nodes=$( scontrol show hostnames $SLURM_JOB_NODELIST ) # Getting the node names
+nodes_array=( $nodes )
+
+node_0=${nodes_array[0]} 
+ip=$( srun -N 1 -n 1 -w $node_0 hostname --ip-address ) # making redis-address
+port=$( python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()' )
+ip_head=$ip:$port
+export ip_head
+echo "IP Head: $ip_head"
+
+srun -N 1 -n 1 -w $node_0 ray start --head \
+    --node-ip-address=$ip --port=$port --redis-password=$redis_password \
+    --num-cpus $SLURM_CPUS_ON_NODE --num-gpus $NUM_GPUS \
+    --temp-dir $TMPDIR --block > /dev/null 2>& 1 &
+sleep 30
+
+worker_num=$(( $SLURM_JOB_NUM_NODES - 1 ))
+for ((  i=1; i<=$worker_num; i++ )); do
+    node_i=${nodes_array[$i]}
+    echo "STARTING WORKER $i at $node_i"
+    srun -N 1 -n 1 -w $node_i ray start --address $ip_head \
+        --redis-password=$redis_password \
+        --num-cpus $SLURM_CPUS_ON_NODE --num-gpus $NUM_GPUS \
+        --temp-dir $TMPDIR --block > /dev/null 2>& 1 &
+    sleep 1
+done
+sleep 10
+###############################################################################
+
+python ~/molpal/run.py --config $CONFIG --ncpu $SLURM_CPUS_PER_TASK -vvvv
