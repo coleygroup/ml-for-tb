@@ -6,9 +6,10 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --signal=SIGTERM@120        # send a SIGTERM 120s before timing out
 
-#SBATCH -N 4                        # number of nodes
-#SBATCH --ntasks-per-node 2
-#SBATCH -c 8                        # cores per task
+# #SBATCH -N 6                        # number of nodes
+# #SBATCH --ntasks-per-node 6
+#SBATCH -n 48
+#SBATCH -c 6                        # cores per task
 
 #SBATCH --mem-per-cpu 2G                 # total memory / node
 #SBATCH -t 1-00:00
@@ -44,7 +45,7 @@ srun -N 1 -n 1 -w $node_0 ray start --head \
     --node-ip-address=$ip --port=$port --redis-password=$redis_password \
     --num-cpus $SLURM_CPUS_ON_NODE --num-gpus $NUM_GPUS \
     --temp-dir $TMPDIR --block > /dev/null 2>& 1 &
-sleep 30
+sleep 10
 
 worker_num=$(( $SLURM_JOB_NUM_NODES - 1 ))
 for ((  i=1; i<=$worker_num; i++ )); do
@@ -53,10 +54,10 @@ for ((  i=1; i<=$worker_num; i++ )); do
     srun -N 1 -n 1 -w $node_i ray start --address $ip_head \
         --redis-password=$redis_password \
         --num-cpus $SLURM_CPUS_ON_NODE --num-gpus $NUM_GPUS \
-        --temp-dir $TMPDIR --block > /dev/null 2>& 1 &
+        --temp-dir $TMPDIR --block > /dev/null &
     sleep 1
 done
-sleep 10
+sleep 30
 ###############################################################################
 
 python ~/molpal/run.py --config $CONFIG --ncpu $SLURM_CPUS_PER_TASK -vvvv
