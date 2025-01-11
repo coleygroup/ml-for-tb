@@ -1,0 +1,28 @@
+name: frlab
+channels:
+  - conda-forge
+  - defaults
+  - anaconda
+  - rdkit
+dependencies:
+  - python=3.10
+  - numpy
+  - matplotlib
+  - pandas
+  - scipy
+  - scikit-learn
+  - mlxtend
+  - xgboost
+  - lightgbm
+  - catboost
+  - optuna
+  - hyperopt
+  - rdkit
+  - tqdm
+  - h2o
+  - pyspark
+  - tabulate
+  - pip
+  - pip:
+    - --index-url https://download.pytorch.org/whl/cu118
+    - torch
