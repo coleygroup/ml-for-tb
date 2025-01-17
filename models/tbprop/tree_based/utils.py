@@ -7,7 +7,7 @@ from lightgbm import LGBMClassifier
 from sklearn.metrics import precision_recall_curve, PrecisionRecallDisplay, accuracy_score
 
 
-def plot_losses(losses, title='Loss vs. Epochs'):
+def plot_losses(losses, title="Loss vs. Epochs"):
     """
     Plots training loss by epoch.
 
@@ -19,15 +19,15 @@ def plot_losses(losses, title='Loss vs. Epochs'):
         Title of plot.
     """
     plt.title(title)
-    plt.plot(range(len(losses)), losses, label='train loss')
+    plt.plot(range(len(losses)), losses, label="train loss")
     plt.ylim([min(losses) - 0.05, max(losses) + 0.05])
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
     plt.legend()
     plt.show()
 
 
-def adjust_params_by_model(params, model, optimizer='optuna', init=False):
+def adjust_params_by_model(params, model, optimizer="optuna", init=False):
     """
     Utility function to adjust parameters for a given model.
 
@@ -42,23 +42,23 @@ def adjust_params_by_model(params, model, optimizer='optuna', init=False):
     """
     model_name = model().__class__.__name__
 
-    if model_name == 'LGBMClassifier' and optimizer != 'random_search':
-            legal_lgbm_params = list(LGBMClassifier().get_params().keys())
-            params = {k: v for k, v in params.items() if k in legal_lgbm_params}
-    elif model_name == 'CatBoostClassifier':
-        params['verbose'] = False
-    elif model_name == 'CatBoostRegressor':
-        if 'n_jobs' in params:
-            del params['n_jobs']
-        params['verbose'] = False
-    elif model_name == 'RandomForestRegressor':
-        if 'learning_rate' in params:
-            del params['learning_rate']
+    if model_name == "LGBMClassifier" and optimizer != "random_search":
+        legal_lgbm_params = list(LGBMClassifier().get_params().keys())
+        params = {k: v for k, v in params.items() if k in legal_lgbm_params}
+    elif model_name == "CatBoostClassifier":
+        params["verbose"] = False
+    elif model_name == "CatBoostRegressor":
+        if "n_jobs" in params:
+            del params["n_jobs"]
+        params["verbose"] = False
+    elif model_name == "RandomForestRegressor":
+        if "learning_rate" in params:
+            del params["learning_rate"]
     # if 'min_samples_split' in params:
     #     del params['min_samples_split']
 
     initialized_model = model(**params) if init else None
-    
+
     return model_name, initialized_model, params
 
 
@@ -89,12 +89,12 @@ def threshold_analysis(X_test, y_test, clf, X_et=None, clf_name=None, plot_value
     prec, rec, thresh = precision_recall_curve(y_test, clf.predict_proba(X_test)[:, 1])
 
     # Get F1 score for all thresholds
-    f1 = (2*prec*rec)/(prec + rec)
-    thresh = np.append(thresh, 1.)
+    f1 = (2 * prec * rec) / (prec + rec)
+    thresh = np.append(thresh, 1.0)
 
     # Indices for best F1 and precision
     best_f1_idx = np.argmax(f1)
-    best_prec_idx = np.argmax([x for x in prec if x != 1.])
+    best_prec_idx = np.argmax([x for x in prec if x != 1.0])
 
     # Thresholds for best F1 and precision
     best_f1_thresh = thresh[best_f1_idx]
@@ -107,7 +107,7 @@ def threshold_analysis(X_test, y_test, clf, X_et=None, clf_name=None, plot_value
     # F1 and recall at best precision threshold
     best_prec_f1 = f1[best_prec_idx]
     best_prec_rec = rec[best_prec_idx]
-    
+
     # Precision and recall at best F1 threshold
     best_f1_prec = prec[best_f1_idx]
     best_f1_rec = rec[best_f1_idx]
@@ -115,17 +115,19 @@ def threshold_analysis(X_test, y_test, clf, X_et=None, clf_name=None, plot_value
     if plot_values:
         _, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-        axes[0].plot(thresh, prec, label='Precision', color='tab:blue')
-        axes[0].plot(thresh, rec, label='Recall', color='tab:orange')
-        axes[0].plot(thresh, f1, label='F1 score', color='tab:green')
-        axes[0].axvline(best_f1_thresh, color='tab:cyan', linestyle='--', label='Best F1 Threshold')
-        axes[0].text(best_f1_thresh+.02, 0, str(round(best_f1_thresh, 2)),  rotation=90)
-        axes[0].axvline(best_prec_thresh, color='tab:pink', linestyle='--', label='Best Precision Threshold')
-        axes[0].text(best_prec_thresh+.02, 0, str(round(best_prec_thresh, 2)),  rotation=90)
-        axes[0].legend(loc='lower right')
-        axes[0].set_title('Precision, Recall, F1 vs Threshold')
-        axes[0].set_xlabel('Threshold')
-        
+        axes[0].plot(thresh, prec, label="Precision", color="tab:blue")
+        axes[0].plot(thresh, rec, label="Recall", color="tab:orange")
+        axes[0].plot(thresh, f1, label="F1 score", color="tab:green")
+        axes[0].axvline(best_f1_thresh, color="tab:cyan", linestyle="--", label="Best F1 Threshold")
+        axes[0].text(best_f1_thresh + 0.02, 0, str(round(best_f1_thresh, 2)), rotation=90)
+        axes[0].axvline(
+            best_prec_thresh, color="tab:pink", linestyle="--", label="Best Precision Threshold"
+        )
+        axes[0].text(best_prec_thresh + 0.02, 0, str(round(best_prec_thresh, 2)), rotation=90)
+        axes[0].legend(loc="lower right")
+        axes[0].set_title("Precision, Recall, F1 vs Threshold")
+        axes[0].set_xlabel("Threshold")
+
         if clf_name is None:
             clf_name = clf.__class__.__name__
 
@@ -134,61 +136,87 @@ def threshold_analysis(X_test, y_test, clf, X_et=None, clf_name=None, plot_value
         )
 
         _ = display.ax_.set_title("Precision vs Recall")
-        display.ax_.axvline(best_prec_rec, color='tab:pink', linestyle='--', label='Best Precision Threshold')
-        display.ax_.axhline(best_prec, color='tab:pink', linestyle='--')
+        display.ax_.axvline(
+            best_prec_rec, color="tab:pink", linestyle="--", label="Best Precision Threshold"
+        )
+        display.ax_.axhline(best_prec, color="tab:pink", linestyle="--")
 
-        display.ax_.axvline(best_f1_rec, color='tab:cyan', linestyle='--', label='Best F1 Threshold')
-        display.ax_.axhline(best_f1_prec, color='tab:cyan', linestyle='--')
+        display.ax_.axvline(
+            best_f1_rec, color="tab:cyan", linestyle="--", label="Best F1 Threshold"
+        )
+        display.ax_.axhline(best_f1_prec, color="tab:cyan", linestyle="--")
 
         plt.legend()
         plt.show()
 
     thresh_values = {
-        'best_f1_thresh': best_f1_thresh,
-        'best_prec_thresh': best_prec_thresh,
-        'best_f1': best_f1,
-        'best_f1_prec': best_f1_prec,
-        'best_f1_rec': best_f1_rec,
-        'best_prec': best_prec,
-        'best_prec_f1': best_prec_f1,
-        'best_prec_rec': best_prec_rec
+        "best_f1_thresh": best_f1_thresh,
+        "best_prec_thresh": best_prec_thresh,
+        "best_f1": best_f1,
+        "best_f1_prec": best_f1_prec,
+        "best_f1_rec": best_f1_rec,
+        "best_prec": best_prec,
+        "best_prec_f1": best_prec_f1,
+        "best_prec_rec": best_prec_rec,
     }
 
     if X_et is not None:
-        best_prec_thresh_support_tst = np.sum(clf.predict_proba(X_test)[:,1] >= best_prec_thresh)*100/X_test.shape[0]
-        best_f1_thresh_support_tst = np.sum(clf.predict_proba(X_test)[:,1] >= best_f1_thresh)*100/X_test.shape[0]
+        best_prec_thresh_support_tst = (
+            np.sum(clf.predict_proba(X_test)[:, 1] >= best_prec_thresh) * 100 / X_test.shape[0]
+        )
+        best_f1_thresh_support_tst = (
+            np.sum(clf.predict_proba(X_test)[:, 1] >= best_f1_thresh) * 100 / X_test.shape[0]
+        )
 
-        best_prec_thresh_support_et = np.sum(clf.predict_proba(X_et)[:,1] >= best_prec_thresh)*100/X_et.shape[0]
-        best_f1_thresh_support_et = np.sum(clf.predict_proba(X_et)[:,1] >= best_f1_thresh)*100/X_et.shape[0]
+        best_prec_thresh_support_et = (
+            np.sum(clf.predict_proba(X_et)[:, 1] >= best_prec_thresh) * 100 / X_et.shape[0]
+        )
+        best_f1_thresh_support_et = (
+            np.sum(clf.predict_proba(X_et)[:, 1] >= best_f1_thresh) * 100 / X_et.shape[0]
+        )
 
-        best_prec_test_acc = accuracy_score(y_test, clf.predict_proba(X_test)[:,1] >= best_prec_thresh)
-        best_f1_test_acc = accuracy_score(y_test, clf.predict_proba(X_test)[:,1] >= best_f1_thresh)
+        best_prec_test_acc = accuracy_score(
+            y_test, clf.predict_proba(X_test)[:, 1] >= best_prec_thresh
+        )
+        best_f1_test_acc = accuracy_score(y_test, clf.predict_proba(X_test)[:, 1] >= best_f1_thresh)
 
-        df_analysis = pd.DataFrame([
+        df_analysis = pd.DataFrame(
             [
-                'Best Prec. Thresh.', 
-                best_prec_thresh, 
-                best_prec, 
-                best_prec_rec, 
-                best_prec_f1, 
-                best_prec_test_acc, 
-                best_prec_thresh_support_tst, 
-                best_prec_thresh_support_et
+                [
+                    "Best Prec. Thresh.",
+                    best_prec_thresh,
+                    best_prec,
+                    best_prec_rec,
+                    best_prec_f1,
+                    best_prec_test_acc,
+                    best_prec_thresh_support_tst,
+                    best_prec_thresh_support_et,
+                ],
+                [
+                    "Best F1 Thresh.",
+                    best_f1_thresh,
+                    best_f1_prec,
+                    best_f1_rec,
+                    best_f1,
+                    best_f1_test_acc,
+                    best_f1_thresh_support_tst,
+                    best_f1_thresh_support_et,
+                ],
             ],
-            [
-                'Best F1 Thresh.', 
-                best_f1_thresh, 
-                best_f1_prec, 
-                best_f1_rec, 
-                best_f1, 
-                best_f1_test_acc, 
-                best_f1_thresh_support_tst, 
-                best_f1_thresh_support_et
-            ]
-        ], columns=['Scheme', 'Threshold', 'Precision', 'Recall', 'F1 Score', 'Test Acc.', '% Active in Test Set', '% Active in E.T. (956) Set'])
+            columns=[
+                "Scheme",
+                "Threshold",
+                "Precision",
+                "Recall",
+                "F1 Score",
+                "Test Acc.",
+                "% Active in Test Set",
+                "% Active in E.T. (956) Set",
+            ],
+        )
 
         for col in df_analysis.columns:
-            if col != 'Scheme':
+            if col != "Scheme":
                 df_analysis[col] = df_analysis[col].apply(lambda x: np.round(x, 3))
     else:
         df_analysis = None
@@ -196,8 +224,7 @@ def threshold_analysis(X_test, y_test, clf, X_et=None, clf_name=None, plot_value
     return thresh_values, df_analysis
 
 
-def heatmap(data, row_labels, col_labels, ax=None,
-            cbar_kw=None, cbarlabel="", **kwargs):
+def heatmap(data, row_labels, col_labels, ax=None, cbar_kw=None, cbarlabel="", **kwargs):
     """
     Create a heatmap from a numpy array and two lists of labels.
 
@@ -238,27 +265,25 @@ def heatmap(data, row_labels, col_labels, ax=None,
     ax.set_yticks(np.arange(data.shape[0]), labels=row_labels)
 
     # Let the horizontal axes labeling appear on top.
-    ax.tick_params(top=True, bottom=False,
-                   labeltop=True, labelbottom=False)
+    ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
 
     # Rotate the tick labels and set their alignment.
-    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
-             rotation_mode="anchor")
+    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right", rotation_mode="anchor")
 
     # Turn spines off and create white grid.
     ax.spines[:].set_visible(False)
 
-    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
-    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
-    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+    ax.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
+    ax.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
+    ax.grid(which="minor", color="w", linestyle="-", linewidth=3)
     ax.tick_params(which="minor", bottom=False, left=False)
 
     return im, cbar
 
 
-def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
-                     textcolors=("black", "white"),
-                     threshold=None, **textkw):
+def annotate_heatmap(
+    im, data=None, valfmt="{x:.2f}", textcolors=("black", "white"), threshold=None, **textkw
+):
     """
     A function to annotate a heatmap.
 
@@ -291,12 +316,11 @@ def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
     if threshold is not None:
         threshold = im.norm(threshold)
     else:
-        threshold = im.norm(data.max())/2.
+        threshold = im.norm(data.max()) / 2.0
 
     # Set default alignment to center, but allow it to be
     # overwritten by textkw.
-    kw = dict(horizontalalignment="center",
-              verticalalignment="center")
+    kw = dict(horizontalalignment="center", verticalalignment="center")
     kw.update(textkw)
 
     # Get the formatter in case a string is supplied
@@ -315,45 +339,52 @@ def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
     return texts
 
 
-def overlap_heatmap(trained_models, test_metrics, df_et, pipeline_features, n_models=5, top_k=100, plot_heatmap=True):
+def overlap_heatmap(
+    trained_models, test_metrics, df_et, pipeline_features, n_models=5, top_k=100, plot_heatmap=True
+):
 
-    top_models = test_metrics.head(n_models)['model'].values
+    top_models = test_metrics.head(n_models)["model"].values
     overlaps = np.zeros((n_models, n_models))
 
-    et_results = df_et[['mol']].copy()
+    et_results = df_et[["mol"]].copy()
     et_sorted_preds = pd.DataFrame()
 
     models_to_idx = {}
     for i, m in enumerate(top_models):
         models_to_idx[m] = i
-        pipeline = 'P1' if 'P1' in m else 'P2'
+        pipeline = "P1" if "P1" in m else "P2"
 
         # TODO: remove this
-        if pipeline == 'P1':
+        if pipeline == "P1":
             continue
 
         et_results[m] = trained_models[m].predict(pipeline_features[pipeline])
         m_scores = trained_models[m].predict_proba(pipeline_features[pipeline])[:, 1]
-        et_sorted_preds[m] = df_et['mol'].values[np.argsort(m_scores)]
-                
+        et_sorted_preds[m] = df_et["mol"].values[np.argsort(m_scores)]
+
     top_n_sorted_preds = et_sorted_preds.head(top_k)
 
-    for (m1, m2) in itertools.combinations(et_sorted_preds.columns, 2):
+    for m1, m2 in itertools.combinations(et_sorted_preds.columns, 2):
         overlap = len(set(top_n_sorted_preds[m1]).intersection(set(top_n_sorted_preds[m2])))
         overlaps[models_to_idx[m1], models_to_idx[m2]] = overlap
         overlaps[models_to_idx[m2], models_to_idx[m1]] = overlap
-        
+
     # overlaps /= top_k
 
     if plot_heatmap:
         fig, ax = plt.subplots(figsize=(7, 5))
 
-        _, _ = heatmap(overlaps, top_models, top_models, ax=ax,
-                        cmap="Oranges", cbarlabel=f"top-{top_k} overlap")
+        _, _ = heatmap(
+            overlaps,
+            top_models,
+            top_models,
+            ax=ax,
+            cmap="Oranges",
+            cbarlabel=f"top-{top_k} overlap",
+        )
 
         ax.set_title(f"Top {top_k} overlap between {n_models} best models")
         fig.tight_layout()
         plt.show()
-        
-    return et_results, et_sorted_preds
 
+    return et_results, et_sorted_preds

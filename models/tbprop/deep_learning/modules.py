@@ -2,12 +2,23 @@ import torch
 import numpy as np
 from typing import List
 
+
 class Conv1dBlock(torch.nn.Sequential):
     """
     A Conv1d block with Conv1d, BatchNorm1d, ReLU, Dropout and MaxPool1d layers.
     """
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=0,
-                 hidden_act=torch.nn.ReLU(), normalize=True, dropout_rate=0.25):
+
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size=3,
+        stride=1,
+        padding=0,
+        hidden_act=torch.nn.ReLU(),
+        normalize=True,
+        dropout_rate=0.25,
+    ):
         """
         Parameters
         ----------
@@ -30,7 +41,9 @@ class Conv1dBlock(torch.nn.Sequential):
         """
         super(Conv1dBlock, self).__init__()
 
-        self.add_module(f"conv", torch.nn.Conv1d(in_channels, out_channels, kernel_size, stride, padding))
+        self.add_module(
+            f"conv", torch.nn.Conv1d(in_channels, out_channels, kernel_size, stride, padding)
+        )
         if normalize:
             self.add_module(f"bn", torch.nn.BatchNorm1d(out_channels))
         self.add_module(f"act", hidden_act)
@@ -40,22 +53,22 @@ class Conv1dBlock(torch.nn.Sequential):
 
 
 class MultiLayerPerceptron(torch.nn.Sequential):
-    """ 
+    """
     MLP with repeating FC-ReLU-Dropout layers.
     """
-    
+
     def __init__(self, fc_layers, dropout_rate=0.25, final_act=None):
         """
         Parameters
         ----------
         fc_layers : list
-            List of FC layer sizes. Start with the input size and end with no. of classes 
+            List of FC layer sizes. Start with the input size and end with no. of classes
             for classification and no. of labels for regression.
             E.g. [128, 64, 32, 8, 1] for a 5-layer binary classification MLP.
         dropout_rate : float
             Dropout rate for dropout layers. Default: 0.
         task : str
-            Task type. Either 'bin_class', 'multi_class' or 'regression'. 
+            Task type. Either 'bin_class', 'multi_class' or 'regression'.
             Default: 'bin_class'.
         """
 
@@ -65,23 +78,23 @@ class MultiLayerPerceptron(torch.nn.Sequential):
         self.dropout_rate = dropout_rate
         self.final_act = final_act
 
-        if final_act and final_act not in ('sigmoid', 'softmax'):
-            raise ValueError(f"final_act should either be None or 'sigmoid' or 'softmax', not '{final_act}'")
+        if final_act and final_act not in ("sigmoid", "softmax"):
+            raise ValueError(
+                f"final_act should either be None or 'sigmoid' or 'softmax', not '{final_act}'"
+            )
 
         layers = []
         for i in range(len(fc_layers) - 1):
-            layers.append((f"fc_{i}", 
-                        torch.nn.Linear(fc_layers[i], 
-                                        fc_layers[i+1])))
+            layers.append((f"fc_{i}", torch.nn.Linear(fc_layers[i], fc_layers[i + 1])))
             if i != len(fc_layers) - 2:
                 layers.append((f"relu_{i}", torch.nn.ReLU()))
                 if dropout_rate > 0:
                     layers.append((f"dropout_{i}", torch.nn.Dropout(dropout_rate)))
 
         if final_act:
-            if final_act == 'sigmoid':
+            if final_act == "sigmoid":
                 layers.append((f"sigmoid", torch.nn.Sigmoid()))
-            elif final_act == 'softmax':
+            elif final_act == "softmax":
                 layers.append((f"softmax", torch.nn.Softmax(dim=1)))
 
         for name, module in layers:
@@ -92,6 +105,7 @@ class LstmHiddenTensorExtractor(torch.nn.Module):
     """
     LSTM hidden tensor extractor.
     """
+
     def forward(self, x):
         """
         Parameters
@@ -123,17 +137,16 @@ def construct_fc_layers(start_size: int, num_layers: int, end_size: int = 1) -> 
     num_layers: int
         Number of layers to have in the MLP
     """
-    assert start_size > end_size and num_layers > 0, \
-        "Constraints on start_size, end_size, and num_layers have failed."
+    assert (
+        start_size > end_size and num_layers > 0
+    ), "Constraints on start_size, end_size, and num_layers have failed."
 
     start_pow_2, end_pow_2 = int(np.log2(start_size)), int(np.log2(end_size))
     max_layers = start_pow_2 - end_pow_2 - 1
 
     if max_layers < num_layers:
-        raise ValueError(
-            f"num_layers should be <= max_layers. max_layers = {max_layers}."
-        )
+        raise ValueError(f"num_layers should be <= max_layers. max_layers = {max_layers}.")
 
-    layers = list(range(start_pow_2-1, start_pow_2 - num_layers, -1))
+    layers = list(range(start_pow_2 - 1, start_pow_2 - num_layers, -1))
 
     return [start_size] + [2**x for x in layers] + [end_size]

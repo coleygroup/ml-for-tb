@@ -3,6 +3,7 @@ import scipy.stats as stats
 
 # from https://github.com/yandexdataschool/roc_comparison/blob/master/compare_auc_delong_xu.py
 
+
 # AUC comparison adapted from
 # https://github.com/Netflix/vmaf/
 def compute_midrank(x):
@@ -21,7 +22,7 @@ def compute_midrank(x):
         j = i
         while j < N and Z[j] == Z[i]:
             j += 1
-        T[i:j] = 0.5*(i + j - 1)
+        T[i:j] = 0.5 * (i + j - 1)
         i = j
     T2 = np.empty(N, dtype=float)
     # Note(kazeevn) +1 is due to Python using 0-based indexing
@@ -133,7 +134,8 @@ def delong_roc_variance(ground_truth, predictions):
     """
     sample_weight = None
     order, label_1_count, ordered_sample_weight = compute_ground_truth_statistics(
-        ground_truth, sample_weight)
+        ground_truth, sample_weight
+    )
     predictions_sorted_transposed = predictions[np.newaxis, order]
     aucs, delongcov = fastDeLong(predictions_sorted_transposed, label_1_count)
     assert len(aucs) == 1, "There is a bug in the code, please forward this to the developers"
@@ -158,13 +160,10 @@ def delong_roc_test(ground_truth, predictions_one, predictions_two):
 
 
 def delong_confidence_intervals(y_true, y_pred, alpha=0.95):
-    auc, auc_cov = delong_roc_variance(y_true,y_pred)
+    auc, auc_cov = delong_roc_variance(y_true, y_pred)
     auc_std = np.sqrt(auc_cov)
     lower_upper_q = np.abs(np.array([0, 1]) - (1 - alpha) / 2)
-    ci = stats.norm.ppf(
-        lower_upper_q,
-        loc=auc,
-        scale=auc_std)
+    ci = stats.norm.ppf(lower_upper_q, loc=auc, scale=auc_std)
 
     ci[ci > 1] = 1
     return auc, ci
