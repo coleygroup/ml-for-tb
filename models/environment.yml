@@ -1,0 +1,30 @@
+name: tbprop
+channels:
+  - conda-forge
+  - defaults
+  - anaconda
+  - rdkit
+dependencies:
+  - python=3.10.10
+  - numpy
+  - matplotlib
+  - pandas
+  - scipy
+  - imbalanced-learn
+  - scikit-learn
+  - mlxtend
+  - xgboost
+  - lightgbm
+  - catboost
+  - optuna
+  - optuna-integration
+  - hyperopt
+  - rdkit
+  - tqdm
+  - pyspark
+  - tabulate
+  - transformers
+  - pytorch-lightning
+  - pip
+  - pip:
+    - chemprop
