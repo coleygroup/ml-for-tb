@@ -1,14 +1,9 @@
-# tbprop
-TB properties using deep learning
+# Machine Learning Models for Molecular Property Predictions for TB Drug Discovery
 
-### Setup
+## Environment Setup
 
 1. [Install Miniconda.](https://docs.anaconda.com/free/miniconda/miniconda-install/)
-2. Clone `tbprop`.
-```bash
-git clone git@github.com:freundjs/tbprop.git
-```
-3. Create conda environment. Install the version of PyTorch that best suits your system from [here](https://pytorch.org/get-started/locally/). Example installations for Mac (MPS) and Linux (GPU) are given below.
+2. Create conda environment. Install the version of PyTorch that best suits your system from [here](https://pytorch.org/get-started/locally/). Example installations for Mac (MPS) and Linux (GPU) are given below.
 ```bash
 cd /path/to/tbprop
 conda env create -f environment.yml
@@ -20,7 +15,7 @@ conda install pytorch pytorch-cuda=12.1 -c pytorch -c nvidia # for Linux with GP
 ```
 4. Download the data and place the `data` directory in the project directory. *Link to data to be posted soon!*
 
-### Running the code
+## Running The Codes
 
 1. Before running any code, you have to navigate to the project directory and set the `PYTHONPATH` as follows.
 ```bash
