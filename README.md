@@ -23,7 +23,7 @@ based virtual screening. More details are listed in [/data/README.md](/data/READ
   └── taacf
       ├── taacf_trn.csv
       ├── taacf_tst.csv
-      └── taacf_val.cs
+      └── taacf_val.csv
   ```
 
 - [1_redocking](1_redocking) docking validation data: PDB structures used for redocking, config files, images of docked poses, docking outputs.
