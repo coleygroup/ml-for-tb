@@ -15,7 +15,7 @@ conda install pytorch pytorch-cuda=12.1 -c pytorch -c nvidia # for Linux with GP
 ```
 4. Download the data and place the `data` directory in the project directory. *Link to data to be posted soon!*
 
-## Running The Codes
+## Running The Code
 
 1. Before running any code, you have to navigate to the project directory and set the `PYTHONPATH` as follows.
 ```bash
@@ -35,3 +35,9 @@ bash sh_scripts/optimize_model.sh
 ```bash
 bash sh_scripts/train_model.sh
 ```
+
+### MIC Models
+
+Our efforts to build the MIC models are contained in the notebooks in `./mic_models`. These include notebooks which take the original datasets (TAACF-CB2, TAACF-SRIKinase, and MLSMR), curate the data, and build models. Note that these were then merged into two datasets - TAACF and MLSMR.
+
+The train, val, test split for the merged MIC datasets is available in `ml-for-tb/data/0_raw.tar.xz` and you can also use the `tbprop` functionality to train them. You can follow `./notebooks/classification_tutorial.ipynb` and `./notebooks/tree_based.ipynb` for training tree-based models or use `sh_scripts/optimize_model.sh` and `sh_scripts/train_model.sh` for building deep learning-based models.
