@@ -8,7 +8,7 @@ The [`data`](/data) directory contains data for training surrogate models, confi
 results for redocking and MolPAL
 based virtual screening. More details are listed in [/data/README.md](/data/README.md).
 
-- [0_raw.tar.xz](0_raw.tar.xz) for data used for training machine leanring models. After uncompressing with
+- [0_raw/0_raw.tar.xz](0_raw/0_raw.tar.xz) for data used for training machine leanring models. After uncompressing with
   `tar -xf 0_raw.tar.xz`, the data will be stored in the `0_raw` folder with the following structure:
 
   ```bash
