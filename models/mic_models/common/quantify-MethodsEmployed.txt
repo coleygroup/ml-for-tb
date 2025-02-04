@@ -1,0 +1,111 @@
+Model Uncertainity
+- Train/test splits
+    - Adapated from:  https://github.com/mozilla/PRESC/blob/master/presc/deprecated/training_stability/train_test_split.py
+    - Dataset:  Training set
+    - Metric:  F1
+    - Explores effects of varying train/test splits ratios on model performance
+    - Method
+        - divides the training dataset into varying stratified training/test splits
+        - split ratio range started at 40/60, w/a step increase of 2, until 98/100 is reached
+            - i.e. 40/60, 42/58, 44/56... 
+        - trains model on the training set and scores on the test set
+    - Plots
+        - F1 score per training size 
+        - F1 standard deviation per training size
+        - 95% confidence interval (CI) around the training sets f1 score
+- Bootstrap
+    - Adapted from:  https://sebastianraschka.com/blog/2022/confidence-intervals-for-ml.html#defining-a-dataset-and-model-for-hands-on-examples
+    - Dataset:  Training set
+    - Metric:  F1
+    - Estimates sample bootstrapping by taking multiple samples with replacement from the training set
+    - 200 rounds is the recommended min, 1000 rounds is preferred.  1000 rounds were performed.  
+    - Out-of-bag (OOB) boostrap was employed:  
+        - sklearn.utils.resample with stratify and replace=true was used to create training folds
+        - molecules not used in training set, were used for evaluation/the held out data
+        - model was trained on traning folds and assessed on held-out data for each round
+    - Calculated 3 Bootstrap scores
+        - Bootstrap:     
+            - OOB boostrap method 
+            - 95% CI computed from the bootstrap samples.
+        - Bootstrap Percentile:  
+            - OOB boostrap method
+            - 95% CI computed by obtaining the 2.5th and 97.5th percentiles of the bootstrap samples distribtion 
+            - percentiles distribution are the upper and lower confidence bounds
+            - robust and general approach
+            - has a slight pessimistic bias
+            - reports a score that is slightly worse than the true generalization score of the model.
+        - Bootstrap 632:  
+            - reference:  http://rasbt.github.io/mlxtend/user_guide/evaluate/bootstrap_point632_score/ 
+            - OOB boostrap method
+            - aims to correct pessimitic bias from OOB
+            - reweighted version of the bootstrap method 
+            - bootstrap samples only have ~63.2% of unique samples from the original dataset &  0.368 reserved for testing in each round
+            - to address this bias, this method uses the following formula:  
+                - weight = .632
+                - fscore_632 = [weight * best_fscore_OOBTrainFolds] + [(1.0 - weight) * best_fscore_AllTrainingSet]
+            - optimistic bias may occur with models that tend to overfit
+                - .632+ Bootstrap Method addreses this
+                - computationally expensive, so not Calculated
+    - Plots
+        - 95% CI around the training sets f1 score, for each bootstrap type
+- Normal Approximation
+    - Adapted from:  https://sebastianraschka.com/blog/2022/confidence-intervals-for-ml.html#defining-a-dataset-and-model-for-hands-on-examples
+    - Dataset:  Test set
+    - Metric:  F1
+    - 95% CI computed from test split
+    - Computationally cheap, avoids retraining model
+- Bootstrap
+    - Adapted from:  https://sebastianraschka.com/blog/2022/confidence-intervals-for-ml.html#defining-a-dataset-and-model-for-hands-on-examples
+    - Dataset:  Test set
+    - Metric:  F1
+    - 95% CI computed from test predictions
+    - Computationally cheap, avoids retraining model 
+- Comparing different CI for eath method
+    - Plot all CIs for all methods for comparison
+        - smaller 95% CI are desirable; narrowing the possible range for F1 being estimated
+        - F1 test score visualized in plot to see which CIs included it
+    - Method 1:  Visual
+        - reference: 
+            - https://statisticsbyjim.com/hypothesis-testing/confidence-intervals-compare-means/ 
+            - https://www.cebm.net/wp-content/uploads/2014/12/Statistical-approaches-to-uncertainty.pdf
+            - https://sebastianraschka.com/blog/2022/confidence-intervals-for-ml.html#method-2-bootstrapping-training-sets--setup-step
+            - https://www.nature.com/articles/nmeth.2659 
+        - Logic
+            - CIs that overlap:  not statistically significant
+            - CIs w/some overlap:  difference might still be significant
+                - p-value ~0.05 = end of each CI reaches ~midpoint between the mean and the limit of the other CI
+                - lower p-values 
+                    - lower amounts of overlap
+                    - end of one CI just reaches the end of the other CI = p-value ~0.01
+            - CIs that don't overlap:  show a statistically significant result            
+        - easy to perform
+        - overly conservative approach
+        - reduces ability to detect differences
+        - fails to reject the null hypothesis more frequently than the corresponding hypothesis test
+        - decreases the statistical power of your assessment (higher type II error rate/false negative)
+        - Problem:  test results apply to the difference between the means while the CIs apply to the estimate of each group’s mean
+    - Method 2:  Use confidence intervals for differences between group means
+        - reference:
+            - https://www.cebm.net/wp-content/uploads/2014/12/Statistical-approaches-to-uncertainty.pdf
+            - https://sebastianraschka.com/blog/2022/confidence-intervals-for-ml.html#method-2-bootstrapping-training-sets--setup-step
+                - See Section:  A Note About Statistical Significance
+            - https://www.nature.com/articles/nmeth.2659
+        - Logic
+            - generate CI for the difference between group means
+                - use same confidence level and significance level (95% in our case)
+            - look at the distribution of the differences between the means of the two CIs being compared
+            - check whether the resulting CI contains 0
+            - Zero represents no difference between the means
+            - if the 0 falls out of the 95%, results are statistically significant
+                - the range excludes no difference
+                - if the low end of the CI is very close to zero
+                    - actual population difference may fall close to zero
+                    - might not be practically significant despite the statistically significant result
+                - Statistical significance indicates only that you have sufficient evidence to conclude that an effect exists
+            - interval width for the mean difference = precision of the estimated effect size
+                - Narrower intervals suggest a more precise estimate.
+
+
+Model Uncertainity
+- Comparing different CI for eath model 
+    - see above for detaila & refererences
