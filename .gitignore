@@ -134,7 +134,6 @@ dmypy.json
 *.err
 *.out
 *.json
-*.tar*
 *.np[zy]
 *.pkl
 *.batch
