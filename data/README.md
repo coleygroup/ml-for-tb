@@ -18,7 +18,7 @@ This folder contains the following data:
   └── taacf
       ├── taacf_trn.csv
       ├── taacf_tst.csv
-      └── taacf_val.cs
+      └── taacf_val.csv
   ```
 
 - [1_redocking](1_redocking) for redocking related configurations and results.
