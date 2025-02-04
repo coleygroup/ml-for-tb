@@ -1,4 +1,5 @@
 # ml-for-tb
+
 Project for sharing surrogate models for TB inhibitors, data sharing, and Jupyter notebooks for prototyping.
 
 ## Data
@@ -29,7 +30,8 @@ based virtual screening. More details are listed in [/data/README.md](/data/READ
 - [1_redocking](1_redocking) docking validation data: PDB structures used for redocking, config files, images of docked poses, docking outputs.
 - [2_molpal](2_molpal) for MolPAL related configurations and results.
 
-## Env setup
+## Environment Setup
+
 As the project develops, `environment.yml` and `requirements.txt` can be used to keep python dependencies organized. This could turn into scripts and an installable python package later on.
 
 ## Models
